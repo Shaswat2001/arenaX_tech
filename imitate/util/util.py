@@ -119,7 +119,8 @@ class DummyVecEnv(VecEnv):
 
         :param mode: The rendering type.
         """
-        return super().render(mode=mode)
+        self.envs[0].render()
+        # return super().render(mode=mode)
 
     def _save_obs(self, env_idx: int, obs: VecEnvObs) -> None:
         for key in self.keys:

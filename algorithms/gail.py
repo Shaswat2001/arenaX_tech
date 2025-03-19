@@ -23,7 +23,7 @@ def save_model(policy,name = "gail_policy"):
         pickle.dump(policy, f)
 
 SEED = 42
-expert = True
+expert = False
 rng = np.random.default_rng(0)
 env = make_vec_env(
     "CoopPuzzle-v0",
@@ -45,7 +45,15 @@ if expert:
         rng=np.random.default_rng(SEED),
     )
 else:
-    pass
+
+    rollouts = rollout.rollout_play(
+        env,
+        rollout.make_sample_until(min_timesteps=None, min_episodes=60),
+        rng=np.random.default_rng(SEED),
+    )
+
+    with open(f"data/trajectory2.pkl", "wb") as f:
+        pickle.dump(rollouts, f)
 
 learner = PPO(
     env=env,
