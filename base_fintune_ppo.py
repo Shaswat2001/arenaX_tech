@@ -9,7 +9,7 @@ import pickle
 # Create the environment
 env = gymnasium.make('CoopPuzzle-v0',grid_size="med",render_mode="human")
 
-ppo_model = PPO.load("ppo_finetuned_policy1.zip")
+ppo_model = PPO.load("gail.zip")
 
 
 obs,_ = env.reset()
