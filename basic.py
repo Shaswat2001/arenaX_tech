@@ -5,18 +5,23 @@ from stable_baselines3 import PPO
 from arenax_minigames import coop_puzzle
 from stable_baselines3 import PPO
 import gymnasium
-
+import pickle
 # Create the environment
 env = gymnasium.make('CoopPuzzle-v0',grid_size="med",render_mode="human")
+
+with open("bc_policy.pkl", "rb") as f:
+    loaded_policy = pickle.load(f)
+
 
 obs,_ = env.reset()
 i = 0
 while True:
 
-    user_input = input("Enter action (integer): ")
-    if user_input.isdigit():
-        action = int(user_input)
-    obs, reward, done, trunc, info = env.step(action)
+    action = loaded_policy.predict(obs)
+    # user_input = input("Enter action (integer): ")
+    # if user_input.isdigit():
+    #     action = int(user_input)
+    obs, reward, done, trunc, info = env.step(action[0])
     env.render()
     i += 1
     if done or i == 100000:
