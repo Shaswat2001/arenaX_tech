@@ -22,9 +22,9 @@ env = make_vec_env(
 
 rollouts = rollout.rollout_play(
 env,
-rollout.make_sample_until(min_timesteps=None, min_episodes=4),
+rollout.make_sample_until(min_timesteps=None, min_episodes=10),
 rng=np.random.default_rng(SEED),
 )
 
-with open(f"data/trajectory2.pkl", "wb") as f:
+with open(f"data/trajectory4.pkl", "wb") as f:
     pickle.dump(rollouts, f)

@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pickle 
 from imitate.data import rollout
 import numpy as np
@@ -34,6 +38,7 @@ env = make_vec_env(
     post_wrappers=[lambda env, _: RolloutInfoWrapper(env)],  # to compute rollouts
 )
 
+rollouts = None
 if expert:
     with open("data/models/bc_policy.pkl", "rb") as f:
         loaded_policy = pickle.load(f)
@@ -45,19 +50,13 @@ if expert:
         rng=np.random.default_rng(SEED),
     )
 else:
-
-    rollouts = rollout.rollout_play(
-        env,
-        rollout.make_sample_until(min_timesteps=None, min_episodes=60),
-        rng=np.random.default_rng(SEED),
-    )
-
-    with open(f"data/trajectory2.pkl", "wb") as f:
-        pickle.dump(rollouts, f)
+    with open(f"data/trajectory2.pkl", "rb") as f:
+        rollouts = pickle.load(f)
 
 learner = PPO(
     env=env,
     policy=MlpPolicy,
+    policy_kwargs=dict(net_arch=[32, 32]),
     batch_size=64,
     ent_coef=0.0,
     learning_rate=0.0004,
@@ -72,7 +71,7 @@ reward_net = BasicRewardNet(
 )
 gail_trainer = GAIL(
     demonstrations=rollouts,
-    demo_batch_size=200,
+    demo_batch_size=300,
     gen_replay_buffer_capacity=512,
     n_disc_updates_per_round=8,
     venv=env,
@@ -80,7 +79,11 @@ gail_trainer = GAIL(
     reward_net=reward_net,
 )
 
+# with open("data/models/bc_policy.pkl", "rb") as f:
+#     loaded_policy = pickle.load(f)
+
+# gail_trainer.policy.load_state_dict(loaded_policy.state_dict(),strict=False)
 # train the learner and evaluate again
-gail_trainer.train(2000000)  # Train for 800_000 steps to match expert.
+gail_trainer.train(7000000)  # Train for 800_000 steps to match expert.
 save_model(gail_trainer.policy)
 

@@ -735,6 +735,48 @@ def flatten_trajectories(
     assert len(lengths) == 1, f"expected one length, got {lengths}"
     return types.Transitions(**cat_parts)
 
+def demonstration_trajectories(
+    trajectories: Iterable[types.Trajectory],
+) -> Dict:
+    """Flatten a series of trajectory dictionaries into arrays.
+
+    Args:
+        trajectories: list of trajectories.
+
+    Returns:
+        The trajectories flattened into a single batch of Transitions.
+    """
+
+    def all_of_type(key, desired_type):
+        return all(
+            isinstance(getattr(traj, key), desired_type) for traj in trajectories
+        )
+
+    assert all_of_type("obs", types.DictObs) or all_of_type("obs", np.ndarray)
+    assert all_of_type("acts", np.ndarray)
+
+    # mypy struggles without Any annotation here.
+    # The necessary constraints are enforced above.
+    keys = ["obs", "next_obs", "acts", "dones", "rewards"]
+    parts: Mapping[str, List[Any]] = {key: [] for key in keys}
+    for traj in trajectories:
+
+        dones = np.zeros(len(traj.acts), dtype=bool)
+        reward = np.zeros(len(traj.acts), dtype=bool)
+        dones[-1] = traj.terminal
+        if traj.terminal:
+            reward[-1] = 1.0
+        for i in range(len(traj.acts)):
+            parts["acts"].append(traj.acts[i])
+
+            obs = traj.obs
+            parts["obs"].append(obs[:-1][i])
+            parts["next_obs"].append(obs[1:][i])
+
+            parts["dones"].append(dones[i])
+            parts["rewards"].append(reward[i])
+
+    return parts
 
 def flatten_trajectories_with_rew(
     trajectories: Sequence[types.TrajectoryWithRew],
@@ -939,7 +981,6 @@ def rollout_play(
         stats = rollout_stats(trajs)
         logging.info(f"Rollout stats: {stats}")
     return trajs
-
 
 def discounted_sum(arr: np.ndarray, gamma: float) -> Union[np.ndarray, float]:
     """Calculate the discounted sum of `arr`.
