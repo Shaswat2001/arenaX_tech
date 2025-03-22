@@ -14,7 +14,6 @@ expert = False
 rng = np.random.default_rng(0)
 env = gymnasium.make('CoopPuzzle-v0',grid_size="med",render_mode="human")
 
-
 class ExpertPolicy:
 
     def __init__(self,env):
@@ -28,8 +27,8 @@ sub_traj = []
 traj = []
 obs,_ = env.reset()
 
-for i in range(obs.shape[0]):
-    print(obs[i])
+for i in range(obs.shape[-1]):
+    print(obs[:,:,i])
 # print(env.player_one_start)
 # print(env.player_two_start)
     

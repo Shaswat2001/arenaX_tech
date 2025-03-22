@@ -25,7 +25,7 @@ ppo_model.set_schedule_parameters(
     critic_start_lr =2.5e-4,
     actor_end_lr=1e-7,
     actor_start_lr= 0.0,
-    ent_coef= 0.0001,
+    ent_coef= 0.001,
 )
 # ppo_model.env.reset()
 for param in ppo_model.policy.mlp_extractor.policy_net.parameters():
@@ -53,4 +53,4 @@ for param_group in ppo_model.policy.optimizer.param_groups:
     print(f"Final Learning Rate: {param_group['lr']}")
 
 # Save the fine-tuned policy
-ppo_model.save("data/models/ppo_finetuned_policy4_phase2_ent_0001")
+ppo_model.save("data/models/ppo_finetuned_policy4_phase2_ent_001")
