@@ -4,3 +4,12 @@ algorithms/replay_buffer/__pycache__
 algorithms/imitate/__pycache__
 algorithms/imitate/data/__pycache__
 algorithms/imitate/util/__pycache__
+src/networks/__pycache__
+src/imitate/util/__pycache__
+src/imitate/__pycache__
+src/imitate/data/__pycache__
+src/imitate/algorithms/__pycache__
+src/models/__pycache__
+src/replay_buffer/__pycache__
+multirun/
+outputs/

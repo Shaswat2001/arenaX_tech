@@ -9,9 +9,9 @@ import arenax_sai
 import gymnasium.envs.registration
 import gymnasium
 import pickle
-from imitate.data import rollout
-from algorithms.replay_buffer.replay_with_demonstrations import ReplayBufferWithDemonstrations
-from algorithms.models.coopppo import CoopPPO
+from src.imitate.data import rollout
+from src.replay_buffer.replay_with_demonstrations import ReplayBufferWithDemonstrations
+from src.models.coopppo import CoopPPO
 
 with open("data/models/bc_policy4.pkl", "rb") as f:
     loaded_policy = pickle.load(f)

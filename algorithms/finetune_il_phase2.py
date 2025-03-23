@@ -10,9 +10,8 @@ import gymnasium.envs.registration
 import gymnasium
 from torch.optim import Adam
 from typing import Callable
-from algorithms.models.coopppo import CoopPPO
-total_steps = 10000
-warmup_steps = 5000
+from src.models.coopppo import CoopPPO
+from stable_baselines3.common.callbacks import EvalCallback
 
 env = gymnasium.make('CoopPuzzle-v0',grid_size="med",render_mode="human")
 
@@ -43,10 +42,15 @@ for param in ppo_model.policy.value_net.parameters():
 for param_group in ppo_model.policy.optimizer.param_groups:
     print(param_group['lr'])
 
+eval_callback = EvalCallback(env, best_model_save_path='data/',
+                             log_path='data/', eval_freq=10000,
+                             deterministic=True, render=False)
+
 # Train PPO with the learning rate schedule
 ppo_model.learn(
     total_timesteps=10_000_000, 
-    tb_log_name = "phase 2" # 4M steps as per your requirement
+    tb_log_name = "phase 2",
+    callback=eval_callback # 4M steps as per your requirement
 )
 
 for param_group in ppo_model.policy.optimizer.param_groups:
