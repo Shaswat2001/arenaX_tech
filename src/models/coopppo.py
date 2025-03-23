@@ -1,31 +1,27 @@
 from stable_baselines3 import PPO
-import warnings
-from typing import Any, ClassVar, Dict, Optional, Type, TypeVar, Union, List
+from typing import Any, Dict, Optional, Type, Union, List, Iterable
 
-import numpy as np
 import torch as th
 from gymnasium import spaces
 from torch.nn import functional as F
 
 from stable_baselines3.common.buffers import RolloutBuffer
-from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
-from stable_baselines3.common.policies import ActorCriticCnnPolicy, ActorCriticPolicy, BasePolicy, MultiInputActorCriticPolicy
-from stable_baselines3.common.type_aliases import GymEnv, MaybeCallback, Schedule
-from stable_baselines3.common.utils import explained_variance, get_schedule_fn
+from stable_baselines3.common.policies import ActorCriticPolicy
+from stable_baselines3.common.type_aliases import GymEnv, Schedule
+from stable_baselines3.common.utils import get_schedule_fn
 from stable_baselines3.common.buffers import DictRolloutBuffer
 
 import io
 import pathlib
-import warnings
-from abc import ABC, abstractmethod
-from collections import deque
-from typing import Any, ClassVar, Dict, Iterable, List, Optional, Tuple, Type, TypeVar, Union
 
 from stable_baselines3.common.save_util import recursive_getattr, save_to_zip_file
 from stable_baselines3.common.type_aliases import GymEnv, Schedule
 
 class CoopPPO(PPO):
-
+    """
+    Cooperative PPO (CoopPPO) extends the standard PPO algorithm with custom learning rate schedules
+    for actor and critic networks, allowing for more flexible training dynamics.
+    """
     def __init__(
         self,
         policy: Union[str, Type[ActorCriticPolicy]],
@@ -61,6 +57,9 @@ class CoopPPO(PPO):
         device: Union[th.device, str] = "auto",
         _init_setup_model: bool = True,
     ):
+        """
+        Initializes CoopPPO with custom learning rate schedules for actor and critic networks.
+        """
         super(CoopPPO,self).__init__(
             policy,
             env,
@@ -90,6 +89,7 @@ class CoopPPO(PPO):
             _init_setup_model=False,
         )
 
+        # Custom parameters for learning rate schedules
         self.total_steps = total_steps
         self.warmup_steps = warmup_steps
         self.critic_end_lr = critic_end_lr
@@ -151,14 +151,12 @@ class CoopPPO(PPO):
         """Custom learning rate schedules for actor and critic networks."""
 
         def critic_lr_schedule(progress_remaining):
-            """Decay from 2.5e-4 to 1.5e-5 over 2M steps, then remain constant."""
             current_step = (1 - progress_remaining) * self.total_steps
             if current_step < self.warmup_steps:
                 return self.critic_start_lr - (current_step / self.warmup_steps) * (self.critic_start_lr - self.critic_end_lr)
             return self.critic_end_lr  # Constant after 2M steps
 
         def actor_lr_schedule(progress_remaining):
-            """Increase from 0 to 1.5e-5 over 2M steps, then remain constant."""
             current_step = (1 - progress_remaining) * self.total_steps
             if current_step < self.warmup_steps:
                 return (current_step / self.warmup_steps) * self.actor_end_lr
@@ -169,10 +167,10 @@ class CoopPPO(PPO):
 
     def _update_learning_rate(self, optimizer: Union[List[th.optim.Optimizer], th.optim.Optimizer]) -> None:
         """Update learning rates dynamically at each training step."""
-        # print(self._current_progress_remaining)
+
         new_actor_lr = self.actor_lr_schedule(self._current_progress_remaining)
         new_critic_lr = self.critic_lr_schedule(self._current_progress_remaining)
-        # print(new_actor_lr)
+
         self.logger.record("train/actor_learning_rate", new_actor_lr)
         self.logger.record("train/critic_learning_rate", new_critic_lr)
 
@@ -205,10 +203,6 @@ class CoopPPO(PPO):
     ) -> None:
         """
         Save all the attributes of the object and the model parameters in a zip-file.
-
-        :param path: path to the file where the rl agent should be saved
-        :param exclude: name of parameters that should be excluded in addition to the default ones
-        :param include: name of parameters that might be excluded but should be included anyway
         """
         # Copy parameter list so we don't mutate the original dict
         data = self.__dict__.copy()

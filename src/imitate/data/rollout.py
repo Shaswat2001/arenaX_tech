@@ -60,14 +60,9 @@ def generate_trajectories_play(
     *,
     deterministic_policy: bool = False,
 ) -> Sequence[types.TrajectoryWithRew]:
-    """Generate trajectory dictionaries from a policy and an environment.
+    """Generate trajectory dictionaries using a human and an environment.
 
     Args:
-        policy: Can be any of the following:
-            1) A stable_baselines3 policy or algorithm trained on the gym environment.
-            2) A Callable that takes an ndarray of observations and returns an ndarray
-            of corresponding actions.
-            3) None, in which case actions will be sampled randomly.
         venv: The vectorized environments to interact with.
         sample_until: A function determining the termination condition.
             It takes a sequence of trajectories, and returns a bool.
@@ -281,9 +276,9 @@ def rollout_play(
     verbose: bool = True,
     **kwargs: Any,
 ) -> Sequence[types.TrajectoryWithRew]:
-    """Generate policy rollouts.
+    """Generate policy rollouts by human playing the environment.
 
-    This method is a wrapper of generate_trajectories that allows
+    This method is a wrapper of generate_trajectories_play that allows
     the user to additionally replace the rewards and observations with the original
     values if the environment is wrapped, to exclude the infos from the
     trajectories, and to print summary statistics of the rollout.
@@ -291,11 +286,6 @@ def rollout_play(
     The `.infos` field of each Trajectory is set to `None` to save space.
 
     Args:
-        policy: Can be any of the following:
-            1) A stable_baselines3 policy or algorithm trained on the gym environment.
-            2) A Callable that takes an ndarray of observations and returns an ndarray
-            of corresponding actions.
-            3) None, in which case actions will be sampled randomly.
         venv: The vectorized environments.
         sample_until: End condition for rollout sampling.
         rng: Random state to use for sampling.
