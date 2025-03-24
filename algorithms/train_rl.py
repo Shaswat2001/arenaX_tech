@@ -8,8 +8,8 @@ from datetime import datetime
 import gymnasium
 from typing import List, Dict, Optional
 from src.models.coopppo import CoopPPO
-from stable_baselines3.common.callbacks import EventCallback
 from stable_baselines3.common.vec_env import VecEnv
+from stable_baselines3.common.callbacks import EvalCallback, EventCallback
 
 class TrainRL:
     """
@@ -83,6 +83,7 @@ class TrainRL:
         if self.phase1["load"]:
             print("LOADING PRETRAINED MODEL -- PHASE1")
             self.trainer = CoopPPO.load(self.phase1["load_model_path"])
+            self.reset_parames(self.env,self.phase2["model_parameters"])
         elif self.phase1["train"]:
             print("TRAINING MODEL -- PHASE1")
             self.set_actor_learning(learn=False)  # Freeze actor
@@ -103,23 +104,33 @@ class TrainRL:
 
         if self.phase2["train"]:
 
-            if self.phase2["load_model_path"] and not self.phase1["train"]:
-                print("LOADING PRETRAINED MODEL -- PHASE2")
-                self.load_rl_model(self.phase2["load_model_path"])
-                self.reset_parames(self.env,self.phase2["model_parameters"])
-            else:
-                print("NO PREVIOUS MODEL GIVEN")
-
             self.set_actor_learning(learn=True)
             self.set_critic_learning(learn=True)
 
-            self.train_rl_model(total_timesteps = self.phase2["model_parameters"]["total_steps"])
+            eval_callback = EvalCallback(self.env, best_model_save_path='data/models/', eval_freq=10000,
+                             deterministic=True, render=False)
+            
+            self.train_rl_model(total_timesteps = self.phase2["model_parameters"]["total_steps"],callback=eval_callback)
 
             # Save trained model
             date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")  # Format current date/time
             model_path = f"data/models/cooppo_finetune_phase2_{date_str}.zip"
             self.save(model_path)
 
+    def set_critic_learning(self, learn: bool) -> None:
+        for param in self.trainer.policy.value_net.parameters():
+            param.requires_grad = learn
+    
+    def set_actor_learning(self, learn: bool) -> None:
+
+        for param in self.trainer.policy.mlp_extractor.policy_net.parameters():
+            param.requires_grad = learn
+
+        for param in self.trainer.policy.mlp_extractor.value_net.parameters():
+            param.requires_grad = learn
+
+        for param in self.trainer.policy.action_net.parameters():
+            param.requires_grad = learn
 
     def reset_parames(self, env: Optional[VecEnv] = None, model_parameters: Optional[Dict] = None) -> None:
         """

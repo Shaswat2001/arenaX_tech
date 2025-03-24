@@ -9,9 +9,9 @@ env:
 model_parameters:
   batch_size: 64
   minibatch_size: 2
-  epochs: 10
+  epochs: 1000
 opt_parameters:
     lr: 1e-4
     eps: 1e-5
-transition_file: ["data/trajectories/trajectory2.pkl"]
+transition_file: ["data/trajectories/trajectory2.pkl","data/trajectories/trajectory3.pkl"]
 policy: "Actor"

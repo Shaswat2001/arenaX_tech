@@ -107,7 +107,7 @@ class TrainBC:
         Trains the behavior cloning policy for the specified number of epochs.
         """
 
-        self.trainer.train(self.epochs)
+        self.trainer.train(n_epochs=self.epochs)
         
     def save(self, model_path: Optional[str] = None) -> None:
         """

@@ -8,8 +8,8 @@ env:
 model_parameters:
   verbose: 1
   batch_size: 64
-  total_steps: 4000
-  warmup_steps: 4000
+  total_steps: 4000000
+  warmup_steps: 4000000
   minibatch_size: 2
   n_epochs: 2
   ent_coef: 0.0
@@ -25,20 +25,20 @@ pretrain_il:
   load: True
   model_path: data/models/imitation/bc_policy4.pkl
 phase1:
-  load: False
+  load: True
   load_model_path: data/models/ppo_finetuned_policy4_param2.zip
   train: False
   model_parameters:
-    total_steps: 4000
+    total_steps: 4000000
 phase2:
-  load_model_path: data/models/ppo_finetuned_policy4_param2.zip
+  load_model_path: data/models/cooppo_finetune_phase1_2025-03-23_22-28-55.zip
   train: True
-  save_model_path: data/models/ppo_finetuned_policy4_phase2_ent_001.zip
+  save_model_path: data/models/ppo_finetuned_policy4_phase2_ent_001_final.zip
   model_parameters:
-    total_steps: 8000
-    warmup_steps: 4000
-    critic_end_lr: 2.5e-4
+    total_steps: 10000000
+    warmup_steps: 3000000
+    critic_end_lr: 1e-7
     critic_start_lr: 2.5e-4
-    actor_end_lr: 0.0
+    actor_end_lr: 1e-7
     actor_start_lr: 0.0
     ent_coef: 0.001
