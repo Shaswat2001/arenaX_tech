@@ -68,13 +68,20 @@ class SQIL:
 
         expert_loss = F.mse_loss(self.QNet(expert_state).gather(1, expert_action.long()), y)
 
+        # print(f"Expert loss: {expert_loss.item()}, Sample loss: {sample_loss.item()}")
+        # print(f"Expert Q-values: {self.QNet(expert_state).gather(1, expert_action.long()).detach().cpu().numpy()}")
+        # print(f"Target values: {y.detach().cpu().numpy()}")
+
+        # print(sample_loss)
+        # print(expert_loss)
         loss = self.args["model_parameters"]["lambda"]*sample_loss + expert_loss
         self.QOptimizer.zero_grad()
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.QNet.parameters(), max_norm=5)
         self.QOptimizer.step()
 
         if self.learning_step%self.args["model_parameters"]["target_update"] == 0:                
-            hard_update(self.TargetQNet,self.QNet)
+            soft_update(self.TargetQNet, self.QNet, tau=0.005)
 
     def predict(self,obs: np.ndarray, epsilon: float = 0.1) -> int:
 
@@ -100,7 +107,7 @@ class SQIL:
         self.QNet = SoftQNetwork(observation_space=self.env.observation_space,action_space=self.env.action_space)
         self.TargetQNet = SoftQNetwork(observation_space=self.env.observation_space,action_space=self.env.action_space)
         self.QOptimizer = torch.optim.Adam(self.QNet.parameters(), lr=self.args["model_parameters"]["lr"])
-
+        
         hard_update(self.TargetQNet,self.QNet)
 
     def fill_demonstrations(self):

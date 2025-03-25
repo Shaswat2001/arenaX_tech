@@ -61,11 +61,12 @@ def main(args: Dict[str, Any]) -> None:
         total_ep_length.append(env.frame)
         avg_reward = np.mean(total_reward[-40:])
         avg_ep_length = np.mean(total_ep_length[-40:])
-        if avg_reward>best_reward and i > 10:
-            best_reward=avg_reward
-            if args["model_parameters"]["save_rl_weights"]:
-                print("Weights Saved !!!")
-                trainer.save()
+        trainer.save()
+        # if avg_reward>best_reward and i > 10:
+        #     best_reward=avg_reward
+        #     if args["model_parameters"]["save_rl_weights"]:
+        #         print("Weights Saved !!!")
+        #         trainer.save()
 
         print("Episode * {} * Avg Reward is ==> {}".format(i, avg_reward))
         print("Episode * {} * Avg EP Length is ==> {}".format(i, avg_ep_length))

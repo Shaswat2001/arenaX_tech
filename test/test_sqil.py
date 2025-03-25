@@ -34,7 +34,7 @@ def load_config(file_path: str = "config.yaml") -> Dict[str, Any]:
 
 def main(args: Dict[str, Any]) -> None:
 
-    env = gymnasium.make(args["env"]["name"],**args["env"]["parameters"])
+    env = gymnasium.make('CoopPuzzle-v0',grid_size="med",render_mode="human")
     trainer = SQIL(env,args)
 
     best_reward = -np.inf

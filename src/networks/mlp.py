@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.distributions import Categorical
 from stable_baselines3.common.policies import ActorCriticPolicy
+
 class SoftQNetwork(nn.Module):
     def __init__(self, observation_space, action_space, alpha: int = 4):
         super(SoftQNetwork, self).__init__()
@@ -12,8 +13,8 @@ class SoftQNetwork(nn.Module):
 
         self.fc1 = nn.Linear(self.n_input_channels, 64)
         self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(64, 256)
-        self.fc3 = nn.Linear(256, n_actions)
+        self.fc2 = nn.Linear(64, 64)
+        self.fc3 = nn.Linear(64, n_actions)
         
     def forward(self, x):
         x = torch.flatten(x).reshape(-1,self.n_input_channels)
@@ -23,7 +24,10 @@ class SoftQNetwork(nn.Module):
         return x
 
     def getVVal(self, q_value):
-        v = self.alpha * torch.logsumexp(q_value / self.alpha, dim=1, keepdim=True)
+        v = self.alpha * torch.log(torch.sum(torch.exp(q_value / self.alpha), 1, keepdim=True))
+        v[v == float("Inf")] = 20
+        v[v == float("-Inf")] = -20
+
         return v
         
     def choose_action(self, state):
