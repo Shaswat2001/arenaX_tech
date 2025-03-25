@@ -85,7 +85,7 @@ To address this, I followed a method in which a two-stage RL fine-tuning strateg
     1. Phase 1: After training just the critic, the **success rate increased from 50% to 61%**.
     2. Phase 2: Joint training with warmup further improved the success rate to an **average of 75%**.
 
-I created a custom PPO class `CoopPPO` to handle seperate optimizers adn lr schedulers for policy and critic networks (implementation in `src/models` folder). 
+I created a custom PPO class `CoopPPO` to handle seperate optimizers and learning rate schedulers for policy and critic networks (implementation in `src/models` folder). 
 
 #### Future Steps/Potential Solutions
 
