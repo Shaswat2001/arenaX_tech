@@ -1,26 +1,22 @@
 # ArenaX COOP challenge 
 
-## About the Challenge
+## 📌 About the Challenge
 
 In this task, a reinforcement learning algorithm was to be designed with focus on cooperation, exploration and sparse rewards. 
 
-For a successful episode - 
+### ✅ Success Criteria
 1. Two mice must reach the cheese together for the episode to be considered successful.
 2. Some gates block the path to the cheese. To open these gates, at least one mouse must interact with a specific flower.
 3. Players must switch between the two mice strategically, helping each other navigate obstacles and progress toward the cheese.
 
-### Environment information 
+### 🛠 Environment information 
 
 * Map Size - Grid of size `19x13`
 * State Space - A matrix of `19x13x13` where each channel represents different elements of the grid, like mouse, cheese, walls and shrubs encoded.
 * Action Space - Integer value between 0 and 9, each mapped to a direction in which a mouse can move and 9 used to switch between the two.
 * Reward - 1 if both the mice reaches the cheese and 0 elsewhere. 
 
-### Issues 
-
-* With the sparse reward, a general RL algorithm will have hard time find an optimal solution. 
-
-## Approaches - 
+## 🚀 Approaches - 
 
 ### Behaviour Cloning - 
 
@@ -63,6 +59,11 @@ Given the limitations of BC, I attempted to fine-tune the learned BC policy usin
 
 When fine-tuning the BC policy using PPO, I observed a significant degradation in performance instead of an improvement. The success rate, which was **initially 50% with BC**, dropped drastically to **~0%**. 😞
 
+<p align="center">
+  <img src="resources/fine_tune_rl_stage1.gif" alt="Fine Tuning Failing" />
+</p>
+
+
 The reason lies in how PPO and other RL algorithms learn. RL relies on an actor-critic setup where the **critic network estimates the value function and guides policy updates**. However, BC training only provides policy weights—it does not train a critic. So, when PPO was applied directly, the lack of a trained critic led to unstable and destructive updates
 
 #### A Better Approach: Two-Stage Fine-Tuning
@@ -82,3 +83,36 @@ To address this, I followed a method in which a two-stage RL fine-tuning strateg
 * Results 🎉
     1. Phase 1: After training just the critic, the **success rate increased from 50% to 61%**.
     2. Phase 2: Joint training with warmup further improved the success rate to an **average of 75%**.
+
+## 📂 Project Structure
+```
+ArenaX_Tech/
+│── algorithms/               # Source code for RL and IL classes
+│── data/                     # Training data & expert demonstrations
+│   │── models/                   # Trained models
+│   │── trajectories/             # Demonstrations for IL
+│── src/                      # Source code for necessary functions/classes
+│── runnables/                # scripts to train RL and IL models
+│── test/                     # scripts to test RL and IL models
+│── requirements.txt          # Dependencies
+```
+
+## 🔧 Setup & Installation
+```bash
+# Clone the repository
+git clone https://github.com/Shaswat2001/arenaX_tech.git
+cd arenaX_tech
+
+# Create a virtual environment and install dependencies
+conda activate sai
+pip install -r requirements.txt
+```
+
+## ▶️ Running the Code
+
+### Train the Model
+```bash
+python runnables/train_imitation.py # Train using Behavior Cloning
+python runnables/train_reinforcement.py  # Fine-tune with Reinforcement Learning
+```
+
