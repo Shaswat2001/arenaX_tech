@@ -84,6 +84,11 @@ To address this, I followed a method in which a two-stage RL fine-tuning strateg
     1. Phase 1: After training just the critic, the **success rate increased from 50% to 61%**.
     2. Phase 2: Joint training with warmup further improved the success rate to an **average of 75%**.
 
+#### Future Steps/Potential Solutions
+
+1. Since the state space for this environment is a 3D matrix, CNN networks can be used in the policy to train both BC/RL. Codes for the same are present in `src/networks` folder of this project and have been integrated with the approaches. However the results are still not in yet. 
+2. Other algorthms which combine IL and RL together like SoftQ Imitation Learning can be explored (the implementation for which is in `src/models` folder). I am currently training that algorithm and debugging my code for any potential issues that might hamper training. 
+
 ## 📂 Project Structure
 ```
 ArenaX_Tech/
