@@ -1,22 +1,17 @@
 import arenax_minigames.coop_puzzle
 import arenax_sai
 import gymnasium.envs.registration
-from stable_baselines3 import PPO
 from arenax_minigames import coop_puzzle
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, DQN
+from src.models.coopppo import CoopPPO
 import gymnasium
-import pickle
 import argparse
+
 # Create the environment
 env = gymnasium.make('CoopPuzzle-v0',grid_size="med",render_mode="human")
 
-def load_model(model_path: str):
-    with open(model_path, "rb") as f:
-        loaded_policy = pickle.load(f)
-    return loaded_policy
-
 def main(model_path: str) -> None:
-    loaded_policy = load_model(model_path)
+    loaded_policy = CoopPPO.load(model_path)
 
     obs,_ = env.reset()
     i = 0
@@ -34,7 +29,7 @@ def main(model_path: str) -> None:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Modify YAML configuration parameters.")
-    parser.add_argument("--model_file", type=str, default="data/models/imitation/bc_policy_best.pkl", help="Path to YAML config file")
+    parser.add_argument("--model_file", type=str, default="data/models/ppo_finetuned_policy_phase2_best.zip", help="Path to YAML config file")
     args = parser.parse_args()
     
     # Run the main training process

@@ -23,16 +23,16 @@ model_parameters:
   max_grad_norm: 0.2
 pretrain_il:
   load: True
-  model_path: data/models/imitation/bc_policy4.pkl
+  model_path: data/models/imitation/bc_policy_best.pkl
 phase1:
   load: False
-  load_model_path: data/models/ppo_finetuned_policy4_param2.zip
+  load_model_path: data/models/ppo_finetuned_policy_phase1_best.zip
   train: True
   model_parameters:
     total_steps: 4000000
 phase2:
   train: False
-  save_model_path: data/models/ppo_finetuned_policy4_phase2_ent_001_final.zip
+  save_model_path: data/models/ppo_finetuned_policy_phase2_best.zip
   model_parameters:
     total_steps: 10000000
     warmup_steps: 3000000
