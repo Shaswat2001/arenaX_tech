@@ -25,14 +25,13 @@ pretrain_il:
   load: True
   model_path: data/models/imitation/bc_policy4.pkl
 phase1:
-  load: True
+  load: False
   load_model_path: data/models/ppo_finetuned_policy4_param2.zip
-  train: False
+  train: True
   model_parameters:
     total_steps: 4000000
 phase2:
-  load_model_path: data/models/cooppo_finetune_phase1_2025-03-23_22-28-55.zip
-  train: True
+  train: False
   save_model_path: data/models/ppo_finetuned_policy4_phase2_ent_001_final.zip
   model_parameters:
     total_steps: 10000000

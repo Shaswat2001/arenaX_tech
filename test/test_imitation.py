@@ -13,7 +13,7 @@ from src.networks.policy import CustomCNNMLPBCPolicy
 # Create the environment
 env = gymnasium.make('CoopPuzzle-v0',grid_size="med",render_mode="human")
 
-def load_model(name = "bc_policy_2025-03-23_21-40-20_epoch_1000"):
+def load_model(name = "bc_policy4"):
     with open(f"data/models/imitation/{name}.pkl", "rb") as f:
         loaded_policy = pickle.load(f)
     return loaded_policy

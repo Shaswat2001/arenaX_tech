@@ -5,10 +5,10 @@ from arenax_minigames import coop_puzzle
 from stable_baselines3 import PPO, DQN
 from src.models.coopppo import CoopPPO
 import gymnasium
-import pickle
+
 # Create the environment
 env = gymnasium.make('CoopPuzzle-v0',grid_size="med",render_mode="human")
-ppo_model = CoopPPO.load("data/models/ppo_finetuned_policy4_phase2_ent_001.zip")
+ppo_model = CoopPPO.load("data/models/cooppo_finetune_phase1_2025-03-24_10-55-08.zip")
 
 obs,_ = env.reset()
 i = 0

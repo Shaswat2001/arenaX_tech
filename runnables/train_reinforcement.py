@@ -6,6 +6,15 @@ from typing import Dict, Any
 
 yaml = YAML()
 
+def convert_scalar_floats(obj):
+    if isinstance(obj, dict):
+        return {k: convert_scalar_floats(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_scalar_floats(v) for v in obj]
+    elif isinstance(obj, ScalarFloat):
+        return float(obj)
+    return obj
+
 def load_config(file_path: str = "config.yaml") -> Dict[str, Any]:
     """
     Load YAML configuration file.
@@ -47,8 +56,11 @@ if __name__ == "__main__":
     config = load_config(args.config)
     
     # Convert ScalarFloat values to float if needed
-    for key, value in config.items():
-        if isinstance(value, ScalarFloat):
-            config[key] = float(value)
-
+    # for key, value in config.items():
+    #     print(key)
+    #     print(value)
+    #     if isinstance(value, ScalarFloat):
+    #         config[key] = float(value)
+    config = convert_scalar_floats(config)
+    print(config)
     main(config)   # Call the main function with the loaded config
