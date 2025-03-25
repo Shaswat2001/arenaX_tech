@@ -86,7 +86,7 @@ To address this, I followed a method in which a two-stage RL fine-tuning strateg
 
 #### Future Steps/Potential Solutions
 
-1. Since the state space for this environment is a 3D matrix, CNN networks can be used in the policy to train both BC/RL. Codes for the same are present in `src/networks` folder of this project and have been integrated with the approaches. However the results are still not in yet. 
+1. Since the state space for this environment is a 3D matrix, CNN networks can be used in the policy to train both BC/RL. Codes for the same are present in `src/networks` folder of this project and have been integrated with the approaches. However the results are still not in yet. This is has been integrated with just BC for now. To train the fintuning pipeline, for now only standard policies can be used. 
 2. Other algorthms which combine IL and RL together like SoftQ Imitation Learning can be explored (the implementation for which is in `src/models` folder). I am currently training that algorithm and debugging my code for any potential issues that might hamper training. 
 
 ## 📂 Project Structure
@@ -121,3 +121,8 @@ python runnables/train_imitation.py # Train using Behavior Cloning
 python runnables/train_reinforcement.py  # Fine-tune with Reinforcement Learning
 ```
 
+### Test the Model
+```bash
+python test/test_imitation.py # Test Behavior Cloning
+python test/test_rl.py  # Test Reinforcement Learning
+```
