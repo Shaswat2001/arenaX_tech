@@ -90,7 +90,8 @@ I created a custom PPO class `CoopPPO` to handle seperate optimizers and learnin
 #### Future Steps/Potential Solutions
 
 1. Since the state space for this environment is a 3D matrix, CNN networks can be used in the policy to train both BC/RL. Codes for the same are present in `src/networks` folder of this project and have been integrated with the approaches. However the results are still not in yet. This is has been integrated with just BC. To train the fintuning pipeline, for now only standard policies can be used. 
-2. Other algorthms which combine IL and RL together like SoftQ Imitation Learning (SQIL) can be explored (the implementation for which is in `src/models` folder). I am currently training that algorithm and debugging my code for any potential issues that might hamper training. 
+2. Other algorthms which combine IL and RL together like SoftQ Imitation Learning (SQIL) can be explored (the implementation for which is in `src/models` folder). I am currently training that algorithm and debugging my code for any potential issues that might hamper training.
+3. Reward shaping can be used to help training of RL algorithms as well. 
 
 ## 📂 Project Structure
 ```
