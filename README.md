@@ -12,9 +12,9 @@ In this task, a reinforcement learning algorithm was to be designed with focus o
 ### 🛠 Environment information 
 
 * Map Size - Grid of size `19x13`
-* State Space - A matrix of `19x13x13` where each channel represents different elements of the grid, like mouse, cheese, walls and shrubs encoded.
-* Action Space - Integer value between 0 and 9, each mapped to a direction in which a mouse can move and 9 used to switch between the two.
-* Reward - 1 if both the mice reaches the cheese and 0 elsewhere. 
+* State Space - A matrix of `19x13x13` where each channel represents different elements of the grid, like position of mouse, cheese, walls and shrubs encoded to either -1 or 1.
+* Action Space - Integer value between 0 and 9, each mapped to a direction in which a mouse can move and 9 is used to switch between the two.
+* Reward - 1 if both the mice reaches the cheese, else 0. 
 
 ## 🚀 Approaches - 
 
@@ -72,8 +72,9 @@ To address this, I followed a method in which a two-stage RL fine-tuning strateg
 
 * *Phase 1 - Critic Learning Only*:
     1. The BC policy was frozen, and RL was used to train only the critic network.
-    2. This ensured that the critic learned a stable value function before influencing policy updates.
-    3. During this phase, rollouts were generated using the BC policy, and the critic was trained until the loss plateaued.
+    2. The weights of the critic network were initialized to be as close to zero as possible. 
+    3. This ensured that the critic learned a stable value function before influencing policy updates.
+    4. During this phase, rollouts were generated using the BC policy, and the critic was trained until the loss plateaued.
 
 * *Phase 2 - Joint Training with Warmup*:
     1. Once the critic had learned a stable value function, the policy was unfrozen.
@@ -84,15 +85,18 @@ To address this, I followed a method in which a two-stage RL fine-tuning strateg
     1. Phase 1: After training just the critic, the **success rate increased from 50% to 61%**.
     2. Phase 2: Joint training with warmup further improved the success rate to an **average of 75%**.
 
+I created a custom PPO class `CoopPPO` to handle seperate optimizers adn lr schedulers for policy and critic networks (implementation in `src/models` folder). 
+
 #### Future Steps/Potential Solutions
 
-1. Since the state space for this environment is a 3D matrix, CNN networks can be used in the policy to train both BC/RL. Codes for the same are present in `src/networks` folder of this project and have been integrated with the approaches. However the results are still not in yet. This is has been integrated with just BC for now. To train the fintuning pipeline, for now only standard policies can be used. 
-2. Other algorthms which combine IL and RL together like SoftQ Imitation Learning can be explored (the implementation for which is in `src/models` folder). I am currently training that algorithm and debugging my code for any potential issues that might hamper training. 
+1. Since the state space for this environment is a 3D matrix, CNN networks can be used in the policy to train both BC/RL. Codes for the same are present in `src/networks` folder of this project and have been integrated with the approaches. However the results are still not in yet. This is has been integrated with just BC. To train the fintuning pipeline, for now only standard policies can be used. 
+2. Other algorthms which combine IL and RL together like SoftQ Imitation Learning (SQIL) can be explored (the implementation for which is in `src/models` folder). I am currently training that algorithm and debugging my code for any potential issues that might hamper training. 
 
 ## 📂 Project Structure
 ```
 ArenaX_Tech/
 │── algorithms/               # Source code for RL and IL classes
+│── config/                   # Config YAML files to setup models
 │── data/                     # Training data & expert demonstrations
 │   │── models/                   # Trained models
 │   │── trajectories/             # Demonstrations for IL
@@ -117,9 +121,11 @@ pip install -r requirements.txt
 
 ### Train the Model
 ```bash
-python runnables/train_imitation.py # Train using Behavior Cloning
-python runnables/train_reinforcement.py  # Fine-tune with Reinforcement Learning
+python runnables/train_imitation.py --config "config/train_bc.yaml" # Train using Behavior Cloning
+python runnables/train_reinforcement.py # Fine-tune with Reinforcement Learning
 ```
+
+All the parameters related to training the IL and RL models can be found in `config` folder. The individual YAML files can be changed based on requirements. 
 
 ### Test the Model
 ```bash

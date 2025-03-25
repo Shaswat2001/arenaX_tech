@@ -5,6 +5,7 @@ env:
   parameters:
     grid_size: med
     render_mode: human
+mode: training
 model_parameters:
   save_rl_weights: True
   n_episodes: 1000

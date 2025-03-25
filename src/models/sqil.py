@@ -78,12 +78,15 @@ class SQIL:
 
     def predict(self,obs: np.ndarray, epsilon: float = 0.1) -> int:
 
-        if np.random.rand() < epsilon:  
-        # Explore: Choose a random action
-            action = np.random.randint(0, self.env.action_space.n)
-        else:  
-            # Exploit: Choose the best action based on Q-values
-            action = self.QNet.choose_action(obs)
+        if self.args["mode"] == "training":
+            if np.random.rand() < epsilon:  
+            # Explore: Choose a random action
+                action = np.random.randint(0, self.env.action_space.n)
+            else:  
+                # Exploit: Choose the best action based on Q-values
+                action = self.QNet.choose_action(obs)
+        else:
+            action = self.TargetQNet.choose_action(obs)
 
         return action
     
@@ -133,6 +136,6 @@ class SQIL:
 
     def load(self):
 
-        self.QNet.load_state_dict(torch.load("data/models/sqil_weights/actorWeights/actorWeights.pth",map_location=torch.device('cpu')))
-        self.TargetQNet.load_state_dict(torch.load("data/models/sqil_weights/TargetactorWeights/QWeights.pth",map_location=torch.device('cpu')))
+        self.QNet.load_state_dict(torch.load("data/models/sqil_weights/actorWeights.pth",map_location=torch.device('cpu')))
+        self.TargetQNet.load_state_dict(torch.load("data/models/sqil_weights/TargetactorWeights.pth",map_location=torch.device('cpu')))
 
